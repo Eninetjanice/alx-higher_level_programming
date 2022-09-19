@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Empty class
+"""
+
+
 class Square:
     """empty class with private instance of size"""
 
