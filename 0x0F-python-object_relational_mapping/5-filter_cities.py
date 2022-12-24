@@ -1,32 +1,27 @@
 #!/usr/bin/python3
-'''script for task 5'''
+"""
+lists all cities from the database
+"""
+if __name__ == "__main__":
 
-import MySQLdb
-import sys
+    import MySQLdb
+    from sys import argv
 
-
-def list_by_state():
-    '''lists all cities of a state passed as argument to the script'''
-    username = sys.argv[1]
-    password = sys.argv[2]
-    db_name = sys.argv[3]
-    state_name = sys.argv[4]
-    host = 'localhost'
-    port = 3306
-
-    db = MySQLdb.connect(host=host, user=username, passwd=password,
-                         db=db_name, port=port)
-    cur = db.cursor()
-    cur.execute('SELECT c.name FROM cities c INNER JOIN states s ' +
-                'ON s.id = c.state_id WHERE ' +
-                'BINARY s.name = %s ' +
-                'ORDER BY c.id ASC;', [state_name])
-    result = cur.fetchall()
-    cur.close()
-    db.close()
-
-    print(', '.join(map(lambda x: x[0], result)))
-
-
-if __name__ == '__main__':
-    list_by_state()
+    cont = 0
+    conect = MySQLdb.connect(host="localhost", port=3306, user=argv[1],
+                             passwd=argv[2], db=argv[3], charset="utf8")
+    cursor = conect.cursor()
+    cursor.execute("""SELECT cities.id, cities.name, states.name
+    FROM cities
+    LEFT JOIN states ON cities.state_id = states.id
+    ORDER BY cities.id ASC""")
+    query_rows = cursor.fetchall()
+    for row in query_rows:
+        if row[2] == argv[4]:
+            if cont > 0:
+                print(", ", end="")
+            print(row[1], end="")
+            cont = cont + 1
+    print()
+    cursor.close()
+    conect.close()
